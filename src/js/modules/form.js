@@ -6,6 +6,34 @@ export default class Form {
         this.inputs = this.form.querySelectorAll('input');
         this.selects = this.form.querySelectorAll('select');
         this.emailInput = this.form.querySelector('[name="email"]');
+        this.phoneInputs = document.querySelectorAll('[name="phone"]');
+    }
+
+    // Маска для номера телефона
+    createMask(event) {
+        let matrix = '+1 (____) ___-__-__',
+            i = 0,
+            def = matrix.replace(/\D/g, ''),
+            val = this.value.replace(/\D/g, '');
+
+        if (def.length >= val.length) {
+            val = def
+        }
+
+        this.value = matrix.replace(/./g, function (a) {
+            return /[_\d]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? '' : a;
+        });
+
+        if (event.type === 'blur') {
+            if (this.value.length === 2) {
+                this.value = '';
+            }
+        } else if (event.type === 'click') {
+            this.setSelectionRange(this.value.length, this.value.length);
+        } else {
+            this.setSelectionRange(this.value.length, this.value.length);
+        }
+
     }
 
     // Очистка полей ввода и сброс select'ов
@@ -27,7 +55,7 @@ export default class Form {
             this.emailInput.addEventListener(event, () => {
                 if (event === 'keypress') {
                     this.emailInput.addEventListener(event, (e) => {
-                        if (e.key.match(/[^a-z 0-9]/ig)) {
+                        if (e.key.match(/[^a-z0-9@.]/ig)) {
                             e.preventDefault();
                         }
                     });
@@ -107,6 +135,11 @@ export default class Form {
 
     init() {
         this.checkEmail();
+        this.phoneInputs.forEach(input => {
+            ['input', 'focus', 'blur', 'click'].forEach((event) => {
+                input.addEventListener(event, this.createMask);
+            });
+        });
         this.postData();
     }
 }

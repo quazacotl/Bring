@@ -3,7 +3,6 @@ import VideoPlayer from "./modules/playVideo";
 import MiniSlider from "./modules/sliders/slider-mini";
 import Difference from "./modules/difference";
 import Form from "./modules/form";
-import Mask from "./modules/mask";
 
 window.addEventListener('DOMContentLoaded', () => {
     const slider = new MainSlider({container: '.page',btns: '.next'});
@@ -43,5 +42,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
     new Form().init();
     new Form(1).init();
-    new Mask().init();
 });
