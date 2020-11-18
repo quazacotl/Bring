@@ -2,6 +2,8 @@ import MainSlider from "./modules/sliders/slider-main";
 import VideoPlayer from "./modules/playVideo";
 import MiniSlider from "./modules/sliders/slider-mini";
 import Difference from "./modules/difference";
+import Form from "./modules/form";
+import Mask from "./modules/mask";
 
 window.addEventListener('DOMContentLoaded', () => {
     const slider = new MainSlider({container: '.page',btns: '.next'});
@@ -38,4 +40,8 @@ window.addEventListener('DOMContentLoaded', () => {
     feedSlider.init();
 
     new Difference('.officerold', '.officernew', '.officer__card-item').init();
+
+    new Form().init();
+    new Form(1).init();
+    new Mask().init();
 });
