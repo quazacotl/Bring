@@ -1,11 +1,11 @@
 import {postData} from "../services/requests";
 
 export default class Form {
-    constructor(containerNumber = 0) {
-        this.form = document.querySelectorAll('.form')[containerNumber];
-        this.inputs = this.form.querySelectorAll('input');
-        this.selects = this.form.querySelectorAll('select');
-        this.emailInput = this.form.querySelector('[name="email"]');
+    constructor(forms) {
+        this.forms = document.querySelectorAll(forms);
+        this.inputs = document.querySelectorAll('input');
+        this.selects = document.querySelectorAll('select');
+        this.emailInput = document.querySelector('[name="email"]');
         this.phoneInputs = document.querySelectorAll('[name="phone"]');
     }
 
@@ -77,69 +77,73 @@ export default class Form {
     }
 
     postData() {
-        this.form.addEventListener('submit', (e) => {
-            e.preventDefault();
+        this.forms.forEach((form) => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
 
-            const message = {
-                loading: 'Загрузка...',
-                success: 'Спасибо, мы с вами свяжемся',
-                failure: 'Ошибка',
-                spinner: 'assets/img/spinner.gif',
-                ok: 'assets/img/ok.png',
-                fail: 'assets/img/fail.png'
-            };
+                const message = {
+                    loading: 'Загрузка...',
+                    success: 'Спасибо, мы с вами свяжемся',
+                    failure: 'Ошибка',
+                    spinner: 'assets/img/spinner.gif',
+                    ok: 'assets/img/ok.png',
+                    fail: 'assets/img/fail.png'
+                };
 
-            let statusMessage = document.createElement('div');
-            this.form.parentNode.appendChild(statusMessage);
+                let statusMessage = document.createElement('div');
+                form.parentNode.appendChild(statusMessage);
 
-            let statusImg = document.createElement('img');
-            statusImg.setAttribute('src', message.spinner);
-            statusImg.classList.add('animated', 'fadeInUp');
-            statusImg.style.display = 'block';
-            statusImg.style.margin = '0 auto';
-            statusMessage.appendChild(statusImg);
+                let statusImg = document.createElement('img');
+                statusImg.setAttribute('src', message.spinner);
+                statusImg.classList.add('animated', 'fadeInUp');
+                statusImg.style.display = 'block';
+                statusImg.style.margin = '0 auto';
+                statusMessage.appendChild(statusImg);
 
-            let textMessage = document.createElement('div');
-            textMessage.style.cssText = `
+                let textMessage = document.createElement('div');
+                textMessage.style.cssText = `
                 color: white;
                 font-size: 16px;
                 font-family: arial;
                 font-weight: 400;
                 text-align: center;
             `;
-            textMessage.textContent = message.loading;
-            statusMessage.appendChild(textMessage);
+                textMessage.textContent = message.loading;
+                statusMessage.appendChild(textMessage);
 
-            const formData = new FormData(this.form);
+                const formData = new FormData(form);
 
-            postData('../assets/question.php', formData)
-                .then(res => {
-                    console.log(res);
-                    statusImg.setAttribute('src', message.ok);
-                    textMessage.textContent = message.success;
-                })
-                .catch(() => {
-                    statusImg.setAttribute('src', message.fail);
-                    textMessage.textContent = message.failure
-                })
-                .finally(() => {
-                    this.clearInputs();
-                    setTimeout(() => {
-                        statusMessage.remove();
-                        statusImg.classList.remove('fadeInUp');
-                        statusImg.classList.add('fadeOutUp');
-                    }, 5000);
-                });
+                postData('../assets/question.php', formData)
+                    .then(res => {
+                        console.log(res);
+                        statusImg.setAttribute('src', message.ok);
+                        textMessage.textContent = message.success;
+                    })
+                    .catch(() => {
+                        statusImg.setAttribute('src', message.fail);
+                        textMessage.textContent = message.failure
+                    })
+                    .finally(() => {
+                        this.clearInputs();
+                        setTimeout(() => {
+                            statusMessage.remove();
+                            statusImg.classList.remove('fadeInUp');
+                            statusImg.classList.add('fadeOutUp');
+                        }, 5000);
+                    });
+            });
         });
     }
 
     init() {
-        this.checkEmail();
-        this.phoneInputs.forEach(input => {
-            ['input', 'focus', 'blur', 'click'].forEach((event) => {
-                input.addEventListener(event, this.createMask);
+        this.forms.forEach(() => {
+            this.checkEmail();
+            this.phoneInputs.forEach(input => {
+                ['input', 'focus', 'blur', 'click'].forEach((event) => {
+                    input.addEventListener(event, this.createMask);
+                });
             });
+            this.postData();
         });
-        this.postData();
     }
 }
